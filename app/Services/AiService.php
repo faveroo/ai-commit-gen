@@ -2,11 +2,17 @@
 
 namespace App\Services;
 
+use App\DTOs\CommitContext;
+use App\Repositories\ConfigRepository;
 use Illuminate\Support\Facades\Http;
 
 class AiService
 {
-    public function generateCommit(string $diff, string $status): string
+    public function __construct(
+        private ConfigRepository $config
+    ) {
+    }
+    public function generateCommit(CommitContext $context): string
     {
         $prompt = <<<PROMPT
 You are a senior software engineer.
@@ -32,20 +38,24 @@ chore
 build
 perf
 
-Git status:
+Current branch:
 
-{$status}
+{$context->branch}
+
+Changed Files:
+
+{$context->files}
 
 Git diff:
 
-{$diff}
+{$context->diff}
 PROMPT;
 
         $response = Http::post(
             sprintf(
                 'https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent?key=%s',
-                config('ai.gemini.model'),
-                config('ai.gemini.key')
+                $this->config->get('model'),
+                $this->config->get('api-key'),
             ),
             [
                 'contents' => [
@@ -124,8 +134,8 @@ PROMPT;
         $response = Http::post(
             sprintf(
                 'https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent?key=%s',
-                config('ai.gemini.model'),
-                config('ai.gemini.key')
+                $this->config->get('model'),
+                $this->config->get('api-key'),
             ),
             [
                 'contents' => [
@@ -139,6 +149,8 @@ PROMPT;
                 ],
             ]
         );
+
+        print_r($response);
 
         return trim(
             data_get(
