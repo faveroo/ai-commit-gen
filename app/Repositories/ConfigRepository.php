@@ -13,7 +13,6 @@ class ConfigRepository
             ?? getcwd();
 
         $this->configPath = $home . DIRECTORY_SEPARATOR . '.git-ai' . DIRECTORY_SEPARATOR . 'config.json';
-        print($this->configPath);
 
         $this->ensureConfigExists();
     }
@@ -52,7 +51,6 @@ class ConfigRepository
     public function ensureConfigExists(): void
     {
         $directory = dirname($this->configPath);
-        print($directory);
 
         if(!is_dir($directory)) {
             mkdir($directory, 0755, true);

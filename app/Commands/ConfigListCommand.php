@@ -30,7 +30,6 @@ class ConfigListCommand extends Command
         ConfigRepository $configRepository
     )
     {
-        $this->newLine();
         $this->table(
             ['Key', 'Value'],
             collect($configRepository->all())
