@@ -34,6 +34,7 @@ class CommitCommand extends Command
     )
     {
         $diff = $git->stagedDiff();
+        $status = $git->status();
 
         if(blank($diff)) {
             $this->error(
@@ -43,6 +44,12 @@ class CommitCommand extends Command
             return self::FAILURE;
         }
 
+        if(blank($status)) {
+            $this->error(
+                "No status found"
+            );
+        }
+
         $message = "";
 
         $this->task('Generating commit message', 
@@ -50,8 +57,9 @@ class CommitCommand extends Command
             &$message,
             $aiService,
             $diff,
+            $status,
         ) {
-            $message = $aiService->generateCommit($diff);
+            $message = $aiService->generateCommit($diff, $status);
 
             return true;
         });

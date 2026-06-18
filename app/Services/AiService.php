@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Http;
 
 class AiService
 {
-    public function generateCommit(string $diff): string
+    public function generateCommit(string $diff, string $status): string
     {
         $prompt = <<<PROMPT
 You are a senior software engineer.
@@ -31,6 +31,10 @@ test
 chore
 build
 perf
+
+Git status:
+
+{$status}
 
 Git diff:
 
