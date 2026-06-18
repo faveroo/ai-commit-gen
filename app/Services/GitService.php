@@ -28,6 +28,17 @@ class GitService
         return $process->getOutput();
     }
 
+    public function branch(): string
+    {
+        $process = Process::fromShellCommandline(
+            'git branch --show-current'
+        );
+
+        $process->run();
+
+        return $process->getOutput();
+    }
+
     public function commit(string $message): void
     {
         $process = Process::fromShellCommandline(
