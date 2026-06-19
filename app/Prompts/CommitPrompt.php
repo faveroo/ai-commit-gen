@@ -112,6 +112,9 @@ Changed files:
 
 Git diff:
 
+"-" -> are removed lines
+"+" -> are new lines
+
 {$context->diff}
 PROMPT;
     }
