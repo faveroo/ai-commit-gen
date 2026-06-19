@@ -8,6 +8,7 @@ use App\Services\AiService;
 use App\Services\GitService;
 use Illuminate\Console\Scheduling\Schedule;
 use LaravelZero\Framework\Commands\Command;
+use RuntimeException;
 
 class CommitCommand extends Command
 {
@@ -65,22 +66,26 @@ class CommitCommand extends Command
 
         $message = "";
 
-        $this->task('Generating commit message', 
-        function() use (
-            &$message,
-            $aiService,
-            $context,
-        ) {
-            $prompt = CommitPrompt::build($context);
-            $message = $aiService->generate($prompt);
-            
-            if(blank($message)) {
-                print('No content in $message');
-                return self::FAILURE;
-            }
+        try {
+            $this->task('Generating commit message', 
+                function() use (&$message, $aiService, $context) {
+                    $prompt = CommitPrompt::build($context);
+                    
+                    $message = $aiService->generate($prompt);
+                    
+                    if(blank($message)) {
+                        print('No content in $message');
+                        return self::FAILURE;
+                    }
 
-            return true;
-        });
+                    return true;
+                });
+
+        } catch (RuntimeException $e) {
+            $this->error($e->getMessage());
+
+            return self::FAILURE;
+        }
 
         $this->newLine();
 
