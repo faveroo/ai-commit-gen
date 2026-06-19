@@ -3,6 +3,7 @@
 namespace App\Commands;
 
 use App\DTOs\CommitContext;
+use App\Prompts\CommitPrompt;
 use App\Services\AiService;
 use App\Services\GitService;
 use Illuminate\Console\Scheduling\Schedule;
@@ -34,11 +35,23 @@ class CommitCommand extends Command
         AiService $aiService
     )
     {
-        $context = new CommitContext($git->stagedDiff(), $git->status(), $git->branch());
+        $context = new CommitContext(
+            branch: $git->branch(),
+            files: $git->status(),
+            diff: $git->stagedDiff()
+        );
 
         if(blank($context->diff)) {
             $this->error(
                 "No staged changes found"
+            );
+
+            return self::FAILURE;
+        }
+
+        if (strlen($context->diff) > 100000) {
+            $this->error(
+                'Diff too large.'
             );
 
             return self::FAILURE;
@@ -58,7 +71,8 @@ class CommitCommand extends Command
             $aiService,
             $context,
         ) {
-            $message = $aiService->generateCommit($context);
+            $prompt = CommitPrompt::build($context);
+            $message = $aiService->generate($prompt);
             
             if(blank($message)) {
                 print('No content in $message');
