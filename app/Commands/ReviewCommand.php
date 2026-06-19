@@ -3,27 +3,28 @@
 namespace App\Commands;
 
 use App\DTOs\CommitContext;
-use App\Prompts\ExplainPrompt;
+use App\DTOs\ReviewContext;
+use App\Prompts\ReviewPrompt;
 use App\Services\AiService;
 use App\Services\GitService;
 use Illuminate\Console\Scheduling\Schedule;
 use LaravelZero\Framework\Commands\Command;
 
-class ExplainCommand extends Command
+class ReviewCommand extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'explain';
+    protected $signature = 'review';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Generate an explanation about git diff --cached';
+    protected $description = 'Reviews the entire git diff --cached';
 
     /**
      * Execute the console command.
@@ -40,32 +41,23 @@ class ExplainCommand extends Command
             diff: $gitService->stagedDiff()
         );
 
-        if(blank($context->diff)) {
-            $this->error("No staged changes found");
+        $prompt = ReviewPrompt::build($context);
+        $response = $aiService->generate($prompt);
+        $this->line($response);
+        // $review = new ReviewContext($response['summary'], $response['risk'], $response['issues'], response['issues']);
 
-            return self::FAILURE;
-        }
+        // $rows = collect($review->issues)
+        //     ->map(fn ($issue) => [
+        //         $issue['severity'],
+        //         $issue['category'],
+        //         $issue['title']
+        //     ])
+        //     ->toArray();
 
-        $message = "";
-
-        $this->task(
-            "Generating Explanation",
-            function()
-            use (
-                $context,
-                &$message,
-                $aiService,
-            ) {
-                $prompt = ExplainPrompt::build($context);
-                $message = $aiService->generate($prompt);
-
-                return true;
-            }
-        );
-
-        $this->newLine();
-
-        $this->line("<fg=green>{$message}</>");
+        // $this->table(
+        //     ['Severity', 'Category', 'Issue'],
+        //     $rows
+        // );
 
         return self::SUCCESS;
     }
