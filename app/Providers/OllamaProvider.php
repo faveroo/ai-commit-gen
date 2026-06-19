@@ -21,7 +21,7 @@ class OllamaProvider implements AIProvider
                 'stream' => false,
             ]
         );
-        print($prompt);
+        // print($prompt);
         // dd($response->json());
 
         return data_get(
