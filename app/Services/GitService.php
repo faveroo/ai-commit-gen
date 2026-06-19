@@ -9,7 +9,7 @@ class GitService
     public function stagedDiff(): string
     {
         $process = Process::fromShellCommandline(
-            'git diff --cached'
+            'git diff --staged --unified=999999'
         );
 
         $process->run();
@@ -20,7 +20,7 @@ class GitService
     public function status(): string
     {
         $process = Process::fromShellCommandline(
-            'git status --short'
+            'git diff --staged --name-status'
         );
 
         $process->run();
