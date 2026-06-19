@@ -10,43 +10,109 @@ class CommitPrompt
         CommitContext $context
     ): string {
         return <<<PROMPT
-You are a senior software engineer.
+You are a senior software engineer specialized in Git and Conventional Commits.
 
-Analyze the git diff and generate a Conventional Commit.
+Your task is to analyze the staged git changes and generate ONE Conventional Commit message.
 
-Rules:
+Return ONLY the commit message.
 
-- Return ONLY the commit message
-- No markdown
-- No explanations
-- Maximum 200 characters
-- Use Conventional Commits
+Do NOT return:
 
-Valid types:
+* Markdown
+* Quotes
+* Code blocks
+* Explanations
+* Multiple commit suggestions
 
-feat
-fix
-docs
-refactor
-test
-chore
-build
-perf
+Conventional Commit rules:
 
-type: message
+feat:
+
+* New functionality
+* New endpoints
+* New commands
+* New user-facing capabilities
+
+fix:
+
+* Bug fixes
+* Incorrect behavior
+* Error handling improvements
+
+refactor:
+
+* Internal code changes without changing behavior
+* Architecture improvements
+* Code organization
+
+perf:
+
+* Performance improvements
+
+test:
+
+* Adding or updating tests
+
+docs:
+
+* Documentation only
+
+build:
+
+* Build, dependencies, CI/CD
+
+chore:
+
+* Maintenance tasks
+* Configuration changes
+* Tooling changes
+
+Scope rules:
+
+- Derive the scope from the changed files.
+- Use the most affected domain/module.
+- Do not invent unrelated scopes.
+- If no clear scope exists, omit the scope.
+
+Examples:
+
+app/Services/AiService.php -> ai
+app/Commands/CommitCommand.php -> commit
+app/Providers/OllamaProvider.php -> ai
+app/Repositories/UserRepository.php -> user
+
+Analysis process:
+
+1. Identify the primary purpose of the change.
+2. Determine whether behavior changed.
+3. Determine whether a new capability was introduced.
+4. Choose the most appropriate Conventional Commit type.
+5. Generate a concise commit message.
+
+Prioritize the actual code changes over filenames.
+
+Format:
+
+type(scope): short description
+
+Examples:
+
+feat(auth): add password reset support
+fix(api): handle missing user token
+refactor(ai): extract provider factory
+chore(config): update default model settings
 
 Current branch:
 
 {$context->branch}
 
-Changed Files:
+Changed files:
 
 {$context->files}
 
 Git diff:
-- -> removed lines
-+ -> new lines
-"{$context->diff}"
+
+{$context->diff}
 PROMPT;
     }
 }
