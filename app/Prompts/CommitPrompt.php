@@ -44,8 +44,9 @@ Changed Files:
 {$context->files}
 
 Git diff:
-
-{$context->diff}
+- -> removed lines
++ -> new lines
+"{$context->diff}"
 PROMPT;
     }
 }
