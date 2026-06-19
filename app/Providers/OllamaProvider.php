@@ -13,7 +13,8 @@ class OllamaProvider implements AIProvider
 
     public function generate(string $prompt): string
     {
-        $response = Http::post(
+        $response = Http::timeout(360)
+        ->post(
             'http://localhost:11434/api/generate',
             [
                 'model' => $this->model,
