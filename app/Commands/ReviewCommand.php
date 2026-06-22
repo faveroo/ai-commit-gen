@@ -29,17 +29,11 @@ class ReviewCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle
-    (
+    public function handle(
         GitService $gitService,
         AiService $aiService
-    )
-    {
-        $context = new CommitContext(
-            branch: $gitService->branch(),
-            files: $gitService->status(),
-            diff: $gitService->stagedDiff()
-        );
+    ) {
+        $context = $gitService->buildStagedContext();
 
         $prompt = ReviewPrompt::build($context);
         $response = $aiService->generate($prompt);
@@ -47,13 +41,13 @@ class ReviewCommand extends Command
         $review = ReviewContext::fromJson($response);
 
         $rows = collect($review->issues)
-            ->map(fn ($issue) => [
+            ->map(fn($issue) => [
                 $issue['severity'] ?? '',
                 $issue['category'] ?? '',
                 $issue['title'] ?? ''
             ])
             ->toArray();
-        
+
         $this->table(
             ['Summary', 'Risks'],
             [

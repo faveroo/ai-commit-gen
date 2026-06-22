@@ -28,19 +28,13 @@ class ExplainCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle
-    (
+    public function handle(
         GitService $gitService,
         AiService $aiService
-    )
-    {
-        $context = new CommitContext(
-            branch: $gitService->branch(),
-            files: $gitService->status(),
-            diff: $gitService->stagedDiff()
-        );
+    ) {
+        $context = $gitService->buildStagedContext();
 
-        if(blank($context->diff)) {
+        if (blank($context->diff)) {
             $this->error("No staged changes found");
 
             return self::FAILURE;
@@ -50,7 +44,7 @@ class ExplainCommand extends Command
 
         $this->task(
             "Generating Explanation",
-            function()
+            function ()
             use (
                 $context,
                 &$message,

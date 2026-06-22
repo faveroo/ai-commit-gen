@@ -2,7 +2,6 @@
 
 namespace App\Commands;
 
-use App\DTOs\CommitContext;
 use App\Prompts\CommitPrompt;
 use App\Services\AiService;
 use App\Services\GitService;
@@ -25,24 +24,18 @@ class CommitCommand extends Command
      * @var string
      */
     protected $description =
-        'Generate commit message with Gemini';
+    'Generate commit message with Gemini';
 
     /**
      * Execute the console command.
      */
-    public function handle
-    (
+    public function handle(
         GitService $git,
         AiService $aiService
-    )
-    {
-        $context = new CommitContext(
-            branch: $git->branch(),
-            files: $git->status(),
-            diff: $git->stagedDiff()
-        );
+    ) {
+        $context = $git->buildStagedContext();
 
-        if(blank($context->diff)) {
+        if (blank($context->diff)) {
             $this->error(
                 "No staged changes found"
             );
@@ -58,29 +51,32 @@ class CommitCommand extends Command
             return self::FAILURE;
         }
 
-        if(blank($context->files)) {
+        if (blank($context->files)) {
             $this->error(
                 "No status found"
             );
+
+            return self::FAILURE;
         }
 
         $message = "";
 
         try {
-            $this->task('Generating commit message', 
-                function() use (&$message, $aiService, $context) {
+            $this->task(
+                'Generating commit message',
+                function () use (&$message, $aiService, $context) {
                     $prompt = CommitPrompt::build($context);
-                    
+
                     $message = $aiService->generate($prompt);
-                    
-                    if(blank($message)) {
+
+                    if (blank($message)) {
                         print('No content in $message');
                         return self::FAILURE;
                     }
 
                     return true;
-                });
-
+                }
+            );
         } catch (RuntimeException $e) {
             $this->error($e->getMessage());
 
@@ -93,7 +89,7 @@ class CommitCommand extends Command
 
         $this->newLine();
 
-        if(!$this->confirm("Commit changes?")) {
+        if (!$this->confirm("Commit changes?")) {
             return self::SUCCESS;
         }
 
