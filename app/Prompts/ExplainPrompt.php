@@ -2,28 +2,31 @@
 
 namespace App\Prompts;
 
-use App\DTOs\CommitContext;
+use App\DTOs\DiffContext;
 
 class ExplainPrompt
 {
-    public static function build(
-        CommitContext $context
-    ) {
-        return <<<PROMPT
+  public static function build(
+    DiffContext $context
+  ) {
+    return <<<PROMPT
 You are a Senior Software Engineer.
 
-Review this git diff.
+Analyze the provided git diff and explain the staged changes in a clear and concise way.
 
-Look for:
+Your goal is to help the developer understand:
 
-- Bugs
-- Security vulnerabilities
-- Performance issues
-- Missing tests
-- Code smells
-- Maintainability concerns
+- What was changed
+- Why the change was likely made
+- Which files/components are affected
+- How the application behavior changes
+- Possible side effects or impacts
+- Any architectural or design implications
+- Any risks introduced by the changes
 
-Be concise.
+Do not perform a code review. Do not look for bugs or suggest improvements unless they are directly relevant to understanding the impact of the change.
+
+Use simple and objective language.
 
 Return ONLY valid JSON.
 
@@ -31,23 +34,35 @@ Schema:
 
 {
   "summary": "string",
-  "risk": "LOW|MEDIUM|HIGH",
-  "issues": [
+  "affected_areas": [
     {
-      "severity": "LOW|MEDIUM|HIGH",
-      "category": "Security|Performance|Testing|Maintainability|Bug",
-      "title": "string",
+      "name": "string",
       "description": "string"
     }
   ],
-  "recommendations": ["string"]
+  "changes": [
+    {
+      "file": "string",
+      "what_changed": "string",
+      "why_it_matters": "string",
+      "impact": "string"
+    }
+  ],
+  "behavioral_changes": [
+    "string"
+  ],
+  "potential_impacts": [
+    "string"
+  ]
 }
 
-If the git diff --cached is empty answer only 'Please ensure your changes are staged by using `git add` before requesting a review.'
+If the git diff --cached is empty answer only:
+
+'Please ensure your changes are staged by using `git add` before requesting an explanation.'
 
 Diff:
 
 {$context->diff}
 PROMPT;
-    }
+  }
 }

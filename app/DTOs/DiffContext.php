@@ -2,7 +2,7 @@
 
 namespace App\DTOs;
 
-class CommitContext
+class DiffContext extends BaseContext
 {
     public function __construct(
         public string $branch,

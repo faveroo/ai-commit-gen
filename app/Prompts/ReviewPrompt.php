@@ -2,14 +2,14 @@
 
 namespace App\Prompts;
 
-use App\DTOs\CommitContext;
+use App\DTOs\DiffContext;
 
 class ReviewPrompt
 {
-    public static function build(
-        CommitContext $context
-    ): string {
-        return <<<PROMPT
+  public static function build(
+    DiffContext $context
+  ): string {
+    return <<<PROMPT
 You are a senior software engineer performing a code review.
 
 1. What was changed.
@@ -61,5 +61,5 @@ Git Diff:
 {$context->diff}
 
 PROMPT;
-    }
+  }
 }

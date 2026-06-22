@@ -2,15 +2,13 @@
 
 namespace App\Prompts;
 
-use App\Commands\ReadmeCommand;
 use App\DTOs\ReadmeContext;
 
 class ReadmePrompt
 {
     public static function build(
         ReadmeContext $context
-    ): string
-    {
+    ): string {
         return <<<PROMPT
 You are a senior developer advocate.
 
@@ -43,7 +41,6 @@ Package.json:
 {$context->package}
 
 Return only markdown.
-PROMPT;
 PROMPT;
     }
 }

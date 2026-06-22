@@ -2,12 +2,12 @@
 
 namespace App\Prompts;
 
-use App\DTOs\CommitContext;
+use App\DTOs\DiffContext;
 
 class CommitPrompt
 {
     public static function build(
-        CommitContext $context
+        DiffContext $context
     ): string {
         return <<<PROMPT
 You are a senior software engineer specialized in Git and Conventional Commits.
