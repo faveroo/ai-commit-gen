@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\DTOs\DiffContext;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
@@ -59,5 +60,14 @@ class GitService
         $process->run();
 
         return $process->getOutput();
+    }
+
+    public function buildStagedContext(): DiffContext
+    {
+        return new DiffContext(
+            branch: $this->branch(),
+            files: $this->status(),
+            diff: $this->stagedDiff()
+        );
     }
 }
