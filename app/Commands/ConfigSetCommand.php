@@ -3,6 +3,7 @@
 namespace App\Commands;
 
 use App\Repositories\ConfigRepository;
+use App\Services\OllamaConfigService;
 use Illuminate\Console\Scheduling\Schedule;
 use LaravelZero\Framework\Commands\Command;
 
@@ -26,7 +27,8 @@ class ConfigSetCommand extends Command
      * Execute the console command.
      */
     public function handle(
-        ConfigRepository $configRepository
+        ConfigRepository $configRepository,
+        OllamaConfigService $service
     ) {
         if ($this->argument('key') === 'provider') {
             $provider = $this->choice('Choose your provider', ['gemini', 'ollama']);
@@ -39,6 +41,10 @@ class ConfigSetCommand extends Command
                 'gemini' => $this->choice('Choose your model', ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-2.5-pro']),
                 'ollama' => $this->choice('Choose your model', ['llama3.2:1b', 'llama3.2:3b', 'qwen3:8b'])
             };
+
+            if ($service->ensureIfNotInstalled($model)) {
+                $service->installModel($model);
+            }
 
             $configRepository->set('model', $model);
 

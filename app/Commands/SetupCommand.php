@@ -27,22 +27,21 @@ class SetupCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle
-    (
+    public function handle(
         ConfigRepository $configRepository,
-        ProjectRepository $projectRepository,
         OllamaConfigService $ollamaConfigService
-    )
-    {
+    ) {
         $this->info("Running Setup!");
 
         $option = $this->choice(
-            'Which AI provider will we use?', 
+            'Which AI provider will we use?',
             [
                 'Gemini Provider',
                 'Ollama Provider'
-            ], 0);
-        
+            ],
+            0
+        );
+
         if ($option === "Gemini Provider") {
             $configRepository->set("provider", "gemini");
 
@@ -53,13 +52,16 @@ class SetupCommand extends Command
             $configRepository->set('model', $model);
 
             $this->info("Gemini Provider configured!");
-
         } else if ($option === "Ollama Provider") {
             $configRepository->set("provider", "ollama");
 
+            if (! $ollamaConfigService->installation()) {
+                $this->error("Please install ollama before continuing. 'ollama.com/download'");
+                return self::FAILURE;
+            }
+
             $model = $this->ask("Which Ollama model we should install? ex: llama3.2:3b");
 
-            $ollamaConfigService->install();
             $ollamaConfigService->installModel($model);
 
             $this->info("Ollama Provider configured!");

@@ -13,34 +13,40 @@ class InstallOllamaCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'ollama:install {--model= : Model name}';
+    protected $signature = 'ollama:model {model}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Install ollama and specific model. Use --model= to specify.';
+    protected $description = 'Install a ollama model.';
 
     /**
      * Execute the console command.
      */
-    public function handle
-    (
+    public function handle(
         OllamaConfigService $service
-    )
-    {
-        $model = $this->option('model');
+    ) {
+        $model = $this->argument('model');
 
-        $this->info($service->install());
+        if (! $service->installation()) {
+            $this->warn("Ollama is not installed. Please install in 'ollama.com/download'");
+            return self::FAILURE;
+        }
 
-        if(!$service->ensureIfNotInstalled($model)) {
+        if (! $service->ensureIfNotInstalled($model)) {
             $this->warn('Model already installed.');
 
             return self::SUCCESS;
         }
 
-        $this->info($service->installModel($model));
+        if (! $service->installModel($model)) {
+            $this->error('Error during installation');
+            return self::FAILURE;
+        }
+
+        $this->warn('The model was installed successfully.');
 
         return self::SUCCESS;
     }

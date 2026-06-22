@@ -83,7 +83,7 @@ app/Repositories/UserRepository.php -> user
 
 Analysis process:
 
-1. Identify the primary purpose of the change.
+1. Identify the purpose of the change.
 2. Determine whether behavior changed.
 3. Determine whether a new capability was introduced.
 4. Choose the most appropriate Conventional Commit type.

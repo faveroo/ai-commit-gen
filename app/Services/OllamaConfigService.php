@@ -13,34 +13,23 @@ class OllamaConfigService
         $home = $_SERVER['HOME']
             ?? $_SERVER['USERPROFILE']
             ?? getcwd();
-        
+
         $this->ollamaPath = $home .  DIRECTORY_SEPARATOR . '.ollama' . DIRECTORY_SEPARATOR;
-
     }
-    public function install()
+    public function installation()
     {
-        if(is_dir($this->ollamaPath)) {
-            return "Ollama is already installed. Continuing to model instalation";
-            
+        if (!is_dir($this->ollamaPath)) {
+            return false;
         }
 
-        $process = Process::fromShellCommandline(
-            'powershell -ExecutionPolicy Bypass -Command "irm https://ollama.com/install.ps1 | iex"'
-        );
-
-        $process->run();
-        
-        if($process->isSuccessful()) {
-            return 'Ollama was installed successfully';
-        }
-
-        return 'An error was ocurred: ' . $process->getErrorOutput();
+        return true;
     }
 
     public function installModel(string $model)
     {
         $process = Process::fromShellCommandline(
-            sprintf('ollama pull %s', $model)
+            sprintf('ollama pull %s', $model),
+            timeout: 360
         );
 
         $process->start();
@@ -49,15 +38,19 @@ class OllamaConfigService
             print($data);
         }
 
-        return 'Model installed!';
+        if (! $process->isSuccessful()) {
+            return false;
+        }
+
+        return true;
     }
 
-    public function ensureIfNotInstalled($model)
+    public function ensureIfNotInstalled(string $model)
     {
         $list = Process::fromShellCommandline('ollama list');
         $list->run();
 
-        if(str_contains($list->getOutput(), $model)) {
+        if (str_contains($list->getOutput(), $model)) {
             return false;
         }
 
