@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Http;
 class GeminiProvider implements AIProvider
 {
     public function __construct(
-        protected string $apiKey,
+        protected string $key,
         protected string $model,
     ) {}
 
@@ -18,7 +18,7 @@ class GeminiProvider implements AIProvider
             sprintf(
                 'https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent?key=%s',
                 $this->model,
-                $this->apiKey
+                $this->key
             ),
             [
                 'contents' => [

@@ -18,15 +18,13 @@ class AIProviderFactory
     {
         $provider = $this->config->get('provider');
 
-        if(! $provider) {
+        if (! $provider) {
             throw new RuntimeException(
                 'No provider configured. Run: ai-commit config:set provider {Ai Provider}'
             );
         }
 
-        return match (
-            $this->config->get('provider')
-        ) {
+        return match ($this->config->get('provider')) {
             'ollama' => $this->makeOllama(),
             'gemini' => $this->makeGemini(),
             default => throw new RuntimeException(
@@ -37,7 +35,7 @@ class AIProviderFactory
 
     public function makeGemini()
     {
-        $key = $this->config->get('api-key');
+        $key = env('GEMINI_API_KEY');
 
         if (! $key) {
             throw new RuntimeException(
@@ -54,7 +52,7 @@ class AIProviderFactory
         }
 
         return new GeminiProvider(
-            apiKey: $key,
+            key: $key,
             model: $model,
         );
     }
@@ -72,5 +70,5 @@ class AIProviderFactory
         return new OllamaProvider(
             model: $model,
         );
-        }
+    }
 }

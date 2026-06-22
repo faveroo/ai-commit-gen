@@ -38,6 +38,7 @@ class ConfigRepository
                 JSON_PRETTY_PRINT
             )
         );
+        chmod($this->configPath, 0600);
     }
 
     public function all(): array
@@ -52,11 +53,11 @@ class ConfigRepository
     {
         $directory = dirname($this->configPath);
 
-        if(!is_dir($directory)) {
+        if (!is_dir($directory)) {
             mkdir($directory, 0755, true);
         }
 
-        if(!file_exists($this->configPath)) {
+        if (!file_exists($this->configPath)) {
             file_put_contents($this->configPath, '{}');
         }
     }
