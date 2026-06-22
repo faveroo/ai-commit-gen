@@ -2,22 +2,17 @@
 
 namespace App\Services;
 
-use App\DTOs\CommitContext;
-use App\Factories\AIProviderFactory;
-use App\Repositories\ConfigRepository;
-use Illuminate\Support\Facades\Http;
+use App\AI\Contracts\AIProvider;
 
 class AiService
 {
     public function __construct(
-        private AIProviderFactory $factory
-    ) {
-    }
+        private AIProvider $provider
+    ) {}
     public function generate(string $prompt): string
     {
         return $this
-            ->factory
-            ->make()
+            ->provider
             ->generate($prompt);
     }
 }

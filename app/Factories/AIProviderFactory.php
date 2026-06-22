@@ -2,9 +2,9 @@
 
 namespace App\Factories;
 
-use App\Contracts\AIProvider;
-use App\Providers\GeminiProvider;
-use App\Providers\OllamaProvider;
+use App\AI\Contracts\AIProvider;
+use App\AI\Providers\GeminiProvider;
+use App\AI\Providers\OllamaProvider;
 use App\Repositories\ConfigRepository;
 use RuntimeException;
 
