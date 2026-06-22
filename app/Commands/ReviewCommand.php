@@ -43,21 +43,28 @@ class ReviewCommand extends Command
 
         $prompt = ReviewPrompt::build($context);
         $response = $aiService->generate($prompt);
-        $this->line($response);
-        // $review = new ReviewContext($response['summary'], $response['risk'], $response['issues'], response['issues']);
 
-        // $rows = collect($review->issues)
-        //     ->map(fn ($issue) => [
-        //         $issue['severity'],
-        //         $issue['category'],
-        //         $issue['title']
-        //     ])
-        //     ->toArray();
+        $review = ReviewContext::fromJson($response);
 
-        // $this->table(
-        //     ['Severity', 'Category', 'Issue'],
-        //     $rows
-        // );
+        $rows = collect($review->issues)
+            ->map(fn ($issue) => [
+                $issue['severity'] ?? '',
+                $issue['category'] ?? '',
+                $issue['title'] ?? ''
+            ])
+            ->toArray();
+        
+        $this->table(
+            ['Summary', 'Risks'],
+            [
+                [$review->summary, $review->risk],
+            ]
+        );
+
+        $this->table(
+            ['Severity', 'Category', 'Issue'],
+            $rows
+        );
 
         return self::SUCCESS;
     }
