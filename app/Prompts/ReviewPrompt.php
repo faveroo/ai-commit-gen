@@ -12,52 +12,47 @@ class ReviewPrompt
         return <<<PROMPT
 You are a senior software engineer performing a code review.
 
-Analyze the provided git diff and explain:
+Analyze the provided git diff and return your response as a **valid JSON object** following exactly this schema:
 
-1. What was changed.
-2. What was added, removed, or modified.
-3. The likely purpose of the change.
-4. Potential impacts on the application.
-5. Any risks, edge cases, or considerations.
+```json
+{
+  "summary": "string",
+  "risk": "string",
+  "issues": [
+    {
+      "severity": "low|medium|high",
+      "title": "string",
+      "category": "string"
+    }
+  ],
+  "recommendations": [
+    {
+      "priority": "low|medium|high",
+      "title": "string",
+      "description": "string"
+    }
+  ]
+}
+```
 
-Rules:
-- Be concise and objective.
-- Focus only on the provided diff.
-- Do not speculate beyond what the diff reasonably indicates.
-- Use technical language suitable for developers.
-- Organize the response using Markdown.
-- If tests were added, mention them.
-- If new files were added, mention them.
-- If database changes were detected, explain their impact.
-- If API changes were detected, explain their impact.
+Requirements:
 
-Return the response in the following format:
-
-## Summary
-
-A short summary of the change.
-
-## Changes
-
-- Item 1
-- Item 2
-- Item 3
-
-## Purpose
-
-Explanation of why this change was likely made.
-
-## Impact
-
-Explanation of how the application may be affected.
-
-## Risks
-
-Any potential concerns, risks, or areas to validate.
+* `summary` and `risks` must be strings.
+* `issues` must always be an array. Return an empty array (`[]`) when no issues are found.
+* `recommendations` must always be an array. Return an empty array (`[]`) when no recommendations are found.
+* Do not return `null` for any field.
+* Do not omit fields.
+* Do not include markdown, code fences, explanations, or additional text outside the JSON object.
+* Focus only on the provided diff.
+* Be concise and objective.
+* Do not speculate beyond what the diff reasonably indicates.
+* If database changes were detected, explain their impact.
+* If API changes were detected, explain their impact.
 
 Git Diff:
 
 {$context->diff}
+
 PROMPT;
     }
 }
