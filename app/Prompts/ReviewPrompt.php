@@ -46,6 +46,7 @@ Requirements:
 * `summary` and `risks` must be strings.
 * `issues` must always be an array. Return an empty array (`[]`) when no issues are found.
 * `recommendations` must always be an array. Return an empty array (`[]`) when no recommendations are found.
+* `Risks` must always be a string. Return 'None' when no risks are found.
 * Do not return `null` for any field.
 * Do not omit fields.
 * Do not include markdown, code fences, explanations, or additional text outside the JSON object.

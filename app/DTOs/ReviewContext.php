@@ -2,7 +2,7 @@
 
 namespace App\DTOs;
 
-class ReviewContext
+class ReviewContext extends BaseContext
 {
     public function __construct
     (
@@ -39,17 +39,5 @@ class ReviewContext
             'issues' => $this->issues,
             'recommendations' => $this->recommendations
         ];
-    }
-
-    private static function sanitizeJson(string $content): string
-    {
-        $content = trim($content);
-
-        $content = preg_replace('/^```json\s*/', '', $content);
-        $content = preg_replace('/^``json\s*/', '', $content);
-        $content = preg_replace('/\s*```$/', '', $content);
-        $content = preg_replace('/\s*``$/', '', $content);
-
-        return trim($content);
     }
 }
