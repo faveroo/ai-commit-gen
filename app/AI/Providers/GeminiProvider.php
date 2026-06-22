@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Providers;
+namespace App\AI\Providers;
 
-use App\Contracts\AIProvider;
+use App\AI\Contracts\AIProvider;
 use Illuminate\Support\Facades\Http;
 use RuntimeException;
 
