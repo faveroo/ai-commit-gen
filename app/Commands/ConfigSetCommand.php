@@ -13,7 +13,7 @@ class ConfigSetCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'config:set {key} {value}';
+    protected $signature = 'config:set {key}';
 
     /**
      * The console command description.
@@ -30,12 +30,37 @@ class ConfigSetCommand extends Command
         ConfigRepository $configRepository
     )
     {
-        $configRepository->set(
-            $this->argument('key'),
-            $this->argument('value')
-        );
+        if ($this->argument('key') === 'provider') {
+            $provider = $this->choice('Choose your provider', ['gemini', 'ollama']);
+            $configRepository->set('provider', $provider);
 
-        $this->info('Configuration saved.');
+            $this->info("The provider was configured!");
+
+        } else if ($this->argument('key') === 'model') {
+            $provider = $configRepository->get('provider');
+            $model = match ($provider) {
+                'gemini' => $this->choice('Choose your model', ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-2.5-pro']),
+                'ollama' => $this->choice('Choose your model', ['llama3.2:1b', 'llama3.2:3b', 'qwen3:8b'])  
+            };
+
+            $configRepository->set('model', $model);
+            
+            $this->info("The model was configured!");
+
+        } else if ($this->argument('key') === 'api-key') {
+            $value = $this->ask('What is your api-key?');
+            $configRepository->set('api-key', $value);
+
+            $this->info("The api-key was configured!");
+        } else {
+
+            $this->error('You should send an valid key name: provider, model or api-key');
+
+            return self::FAILURE;
+        }
+
+        return self::SUCCESS;
+
     }
 
     /**
