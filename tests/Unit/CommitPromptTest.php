@@ -1,10 +1,10 @@
 <?php
 
-use App\DTOs\CommitContext;
+use App\DTOs\DiffContext;
 use App\Prompts\CommitPrompt;
 
 it('includes the branch name in the prompt', function () {
-    $context = new CommitContext(
+    $context = new DiffContext(
         branch: 'feature/user-auth',
         files: 'M app/Services/AuthService.php',
         diff: '+public function login() {}'
@@ -16,7 +16,7 @@ it('includes the branch name in the prompt', function () {
 });
 
 it('includes the changed files in the prompt', function () {
-    $context = new CommitContext(
+    $context = new DiffContext(
         branch: 'main',
         files: "M app/Services/AuthService.php\nA app/DTOs/LoginRequest.php",
         diff: '+some diff content'
@@ -34,7 +34,7 @@ it('includes the diff in the prompt', function () {
 +    public function newMethod()
 DIFF;
 
-    $context = new CommitContext(
+    $context = new DiffContext(
         branch: 'main',
         files: 'M app/Example.php',
         diff: $diff
@@ -47,7 +47,7 @@ DIFF;
 });
 
 it('includes conventional commit instructions', function () {
-    $context = new CommitContext(
+    $context = new DiffContext(
         branch: 'main',
         files: 'M file.php',
         diff: '+change'
@@ -63,7 +63,7 @@ it('includes conventional commit instructions', function () {
 });
 
 it('returns a non-empty string', function () {
-    $context = new CommitContext(
+    $context = new DiffContext(
         branch: 'develop',
         files: 'A new-file.php',
         diff: '+new content'

@@ -3,11 +3,11 @@
 use App\Services\AiService;
 use App\Services\GitService;
 
+use App\DTOs\DiffContext;
+
 it('fails when there are no staged changes', function () {
     $gitMock = Mockery::mock(GitService::class);
-    $gitMock->shouldReceive('branch')->andReturn('main');
-    $gitMock->shouldReceive('status')->andReturn('');
-    $gitMock->shouldReceive('stagedDiff')->andReturn('');
+    $gitMock->shouldReceive('buildStagedContext')->andReturn(new DiffContext('main', '', ''));
 
     $this->app->instance(GitService::class, $gitMock);
 
@@ -20,9 +20,7 @@ it('fails when the diff is too large', function () {
     $largeDiff = str_repeat('+ added line content here for padding', 5000);
 
     $gitMock = Mockery::mock(GitService::class);
-    $gitMock->shouldReceive('branch')->andReturn('main');
-    $gitMock->shouldReceive('status')->andReturn('M large-file.php');
-    $gitMock->shouldReceive('stagedDiff')->andReturn($largeDiff);
+    $gitMock->shouldReceive('buildStagedContext')->andReturn(new DiffContext('main', 'M large-file.php', $largeDiff));
 
     $this->app->instance(GitService::class, $gitMock);
 
@@ -33,9 +31,7 @@ it('fails when the diff is too large', function () {
 
 it('generates a commit message and allows declining', function () {
     $gitMock = Mockery::mock(GitService::class);
-    $gitMock->shouldReceive('branch')->andReturn('feature/login');
-    $gitMock->shouldReceive('status')->andReturn('M app/Auth.php');
-    $gitMock->shouldReceive('stagedDiff')->andReturn('+public function login()');
+    $gitMock->shouldReceive('buildStagedContext')->andReturn(new DiffContext('feature/login', 'M app/Auth.php', '+public function login()'));
 
     $aiMock = Mockery::mock(AiService::class);
     $aiMock->shouldReceive('generate')
@@ -53,9 +49,7 @@ it('generates a commit message and allows declining', function () {
 
 it('commits when user confirms', function () {
     $gitMock = Mockery::mock(GitService::class);
-    $gitMock->shouldReceive('branch')->andReturn('main');
-    $gitMock->shouldReceive('status')->andReturn('M app/Service.php');
-    $gitMock->shouldReceive('stagedDiff')->andReturn('+new code');
+    $gitMock->shouldReceive('buildStagedContext')->andReturn(new DiffContext('main', 'M app/Service.php', '+new code'));
     $gitMock->shouldReceive('commit')
         ->once()
         ->with('fix(service): resolve null check');
@@ -76,9 +70,7 @@ it('commits when user confirms', function () {
 
 it('handles runtime exceptions from the ai service', function () {
     $gitMock = Mockery::mock(GitService::class);
-    $gitMock->shouldReceive('branch')->andReturn('main');
-    $gitMock->shouldReceive('status')->andReturn('M file.php');
-    $gitMock->shouldReceive('stagedDiff')->andReturn('+code');
+    $gitMock->shouldReceive('buildStagedContext')->andReturn(new DiffContext('main', 'M file.php', '+code'));
 
     $aiMock = Mockery::mock(AiService::class);
     $aiMock->shouldReceive('generate')

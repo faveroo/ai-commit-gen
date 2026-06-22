@@ -3,11 +3,11 @@
 use App\Services\AiService;
 use App\Services\GitService;
 
+use App\DTOs\DiffContext;
+
 it('fails when there are no staged changes', function () {
     $gitMock = Mockery::mock(GitService::class);
-    $gitMock->shouldReceive('branch')->andReturn('main');
-    $gitMock->shouldReceive('status')->andReturn('');
-    $gitMock->shouldReceive('stagedDiff')->andReturn('');
+    $gitMock->shouldReceive('buildStagedContext')->andReturn(new DiffContext('main', '', ''));
 
     $this->app->instance(GitService::class, $gitMock);
 
@@ -18,9 +18,7 @@ it('fails when there are no staged changes', function () {
 
 it('generates and displays an explanation', function () {
     $gitMock = Mockery::mock(GitService::class);
-    $gitMock->shouldReceive('branch')->andReturn('feature/refactor');
-    $gitMock->shouldReceive('status')->andReturn('M app/Service.php');
-    $gitMock->shouldReceive('stagedDiff')->andReturn('+refactored code');
+    $gitMock->shouldReceive('buildStagedContext')->andReturn(new DiffContext('feature/refactor', 'M app/Service.php', '+refactored code'));
 
     $aiMock = Mockery::mock(AiService::class);
     $aiMock->shouldReceive('generate')

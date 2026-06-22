@@ -1,10 +1,10 @@
 <?php
 
-use App\DTOs\CommitContext;
+use App\DTOs\DiffContext;
 use App\Prompts\ExplainPrompt;
 
 it('includes the diff in the explain prompt', function () {
-    $context = new CommitContext(
+    $context = new DiffContext(
         branch: 'main',
         files: 'M app/Example.php',
         diff: '+new code line here'
@@ -16,7 +16,7 @@ it('includes the diff in the explain prompt', function () {
 });
 
 it('asks for json response', function () {
-    $context = new CommitContext(
+    $context = new DiffContext(
         branch: 'main',
         files: 'M file.php',
         diff: '+change'
@@ -27,8 +27,8 @@ it('asks for json response', function () {
     expect($prompt)->toContain('Return ONLY valid JSON');
 });
 
-it('includes review categories', function () {
-    $context = new CommitContext(
+it('includes explanation categories', function () {
+    $context = new DiffContext(
         branch: 'main',
         files: 'M file.php',
         diff: '+change'
@@ -36,14 +36,14 @@ it('includes review categories', function () {
 
     $prompt = ExplainPrompt::build($context);
 
-    expect($prompt)->toContain('Bugs')
-        ->and($prompt)->toContain('Security vulnerabilities')
-        ->and($prompt)->toContain('Performance issues')
-        ->and($prompt)->toContain('Code smells');
+    expect($prompt)->toContain('what_changed')
+        ->and($prompt)->toContain('why_it_matters')
+        ->and($prompt)->toContain('potential_impacts')
+        ->and($prompt)->toContain('behavioral_changes');
 });
 
 it('returns a non-empty string', function () {
-    $context = new CommitContext(
+    $context = new DiffContext(
         branch: 'main',
         files: 'M file.php',
         diff: '+something'

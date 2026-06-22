@@ -1,10 +1,10 @@
 <?php
 
-use App\DTOs\CommitContext;
+use App\DTOs\DiffContext;
 use App\Prompts\ReviewPrompt;
 
 it('includes the diff in the review prompt', function () {
-    $context = new CommitContext(
+    $context = new DiffContext(
         branch: 'main',
         files: 'M app/Example.php',
         diff: '+public function newFeature() { return true; }'
@@ -16,7 +16,7 @@ it('includes the diff in the review prompt', function () {
 });
 
 it('includes the json schema in the prompt', function () {
-    $context = new CommitContext(
+    $context = new DiffContext(
         branch: 'main',
         files: 'M file.php',
         diff: '+change'
@@ -31,7 +31,7 @@ it('includes the json schema in the prompt', function () {
 });
 
 it('instructs the model to return valid json', function () {
-    $context = new CommitContext(
+    $context = new DiffContext(
         branch: 'main',
         files: 'M file.php',
         diff: '+change'
@@ -43,7 +43,7 @@ it('instructs the model to return valid json', function () {
 });
 
 it('returns a non-empty string', function () {
-    $context = new CommitContext(
+    $context = new DiffContext(
         branch: 'main',
         files: 'M file.php',
         diff: '+something'

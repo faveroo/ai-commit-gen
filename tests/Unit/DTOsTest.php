@@ -1,11 +1,11 @@
 <?php
 
-use App\DTOs\CommitContext;
+use App\DTOs\DiffContext;
 use App\DTOs\ReadmeContext;
 
-describe('CommitContext', function () {
+describe('DiffContext', function () {
     it('stores branch, files, and diff', function () {
-        $context = new CommitContext(
+        $context = new DiffContext(
             branch: 'feature/test',
             files: 'M file.php',
             diff: '+new line'
@@ -17,7 +17,7 @@ describe('CommitContext', function () {
     });
 
     it('handles empty strings', function () {
-        $context = new CommitContext(
+        $context = new DiffContext(
             branch: '',
             files: '',
             diff: ''
@@ -38,7 +38,7 @@ describe('CommitContext', function () {
  class Example {}
 DIFF;
 
-        $context = new CommitContext(
+        $context = new DiffContext(
             branch: 'main',
             files: 'M file.php',
             diff: $diff

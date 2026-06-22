@@ -1,6 +1,7 @@
 <?php
 
 use App\Repositories\ConfigRepository;
+use App\Services\OllamaConfigService;
 
 it('fails with an invalid key', function () {
     $this->artisan('config:set', ['key' => 'invalid-key'])
@@ -13,6 +14,9 @@ it('sets the provider via choice', function () {
     $configMock->shouldReceive('set')
         ->once()
         ->with('provider', 'gemini');
+
+    $ollamaMock = Mockery::mock(OllamaConfigService::class);
+    $this->app->instance(OllamaConfigService::class, $ollamaMock);
 
     $this->app->instance(ConfigRepository::class, $configMock);
 
@@ -31,6 +35,11 @@ it('sets the model for gemini provider', function () {
         ->once()
         ->with('model', 'gemini-2.5-flash');
 
+    $ollamaMock = Mockery::mock(OllamaConfigService::class);
+    $ollamaMock->shouldReceive('ensureIfNotInstalled')->with('gemini-2.5-flash')->andReturn(false);
+
+    $this->app->instance(OllamaConfigService::class, $ollamaMock);
+
     $this->app->instance(ConfigRepository::class, $configMock);
 
     $this->artisan('config:set', ['key' => 'model'])
@@ -47,6 +56,11 @@ it('sets the model for ollama provider', function () {
     $configMock->shouldReceive('set')
         ->once()
         ->with('model', 'llama3.2:3b');
+
+    $ollamaMock = Mockery::mock(OllamaConfigService::class);
+    $ollamaMock->shouldReceive('ensureIfNotInstalled')->with('llama3.2:3b')->andReturn(false);
+
+    $this->app->instance(OllamaConfigService::class, $ollamaMock);
 
     $this->app->instance(ConfigRepository::class, $configMock);
 

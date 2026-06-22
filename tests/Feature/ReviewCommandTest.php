@@ -3,6 +3,8 @@
 use App\Services\AiService;
 use App\Services\GitService;
 
+use App\DTOs\DiffContext;
+
 it('displays review results in tables', function () {
     $reviewJson = json_encode([
         'summary' => 'Added authentication module',
@@ -24,9 +26,7 @@ it('displays review results in tables', function () {
     ]);
 
     $gitMock = Mockery::mock(GitService::class);
-    $gitMock->shouldReceive('branch')->andReturn('main');
-    $gitMock->shouldReceive('status')->andReturn('M app/Auth.php');
-    $gitMock->shouldReceive('stagedDiff')->andReturn('+new code');
+    $gitMock->shouldReceive('buildStagedContext')->andReturn(new DiffContext('main', 'M app/Auth.php', '+new code'));
 
     $aiMock = Mockery::mock(AiService::class);
     $aiMock->shouldReceive('generate')
@@ -57,9 +57,7 @@ it('handles review with no issues', function () {
     ]);
 
     $gitMock = Mockery::mock(GitService::class);
-    $gitMock->shouldReceive('branch')->andReturn('main');
-    $gitMock->shouldReceive('status')->andReturn('M app/Service.php');
-    $gitMock->shouldReceive('stagedDiff')->andReturn('+clean code');
+    $gitMock->shouldReceive('buildStagedContext')->andReturn(new DiffContext('main', 'M app/Service.php', '+clean code'));
 
     $aiMock = Mockery::mock(AiService::class);
     $aiMock->shouldReceive('generate')->andReturn($reviewJson);
@@ -80,9 +78,7 @@ it('handles json wrapped in code fences', function () {
     ]) . "\n```";
 
     $gitMock = Mockery::mock(GitService::class);
-    $gitMock->shouldReceive('branch')->andReturn('main');
-    $gitMock->shouldReceive('status')->andReturn('M file.php');
-    $gitMock->shouldReceive('stagedDiff')->andReturn('+code');
+    $gitMock->shouldReceive('buildStagedContext')->andReturn(new DiffContext('main', 'M file.php', '+code'));
 
     $aiMock = Mockery::mock(AiService::class);
     $aiMock->shouldReceive('generate')->andReturn($wrapped);

@@ -1,8 +1,8 @@
 <?php
 
 use App\Factories\AIProviderFactory;
-use App\Providers\GeminiProvider;
-use App\Providers\OllamaProvider;
+use App\AI\Providers\GeminiProvider;
+use App\AI\Providers\OllamaProvider;
 use App\Repositories\ConfigRepository;
 
 beforeEach(function () {
