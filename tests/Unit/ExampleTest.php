@@ -1,5 +1,3 @@
 <?php
 
-test('example', function () {
-    expect(true)->toBeTrue();
-});
+// Placeholder removed — real tests are in Unit/ and Feature/ directories.
