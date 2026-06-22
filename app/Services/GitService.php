@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
 class GitService
@@ -41,15 +42,13 @@ class GitService
 
     public function commit(string $message): void
     {
-        $process = Process::fromShellCommandline(
-            sprintf(
-                'git commit -m "%s"',
-                addslashes($message)    
-            )
-        );
-
+        $process = new Process(['git', 'commit', '-m', $message]);
         $process->run();
-    } 
+
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+    }
 
     public function listFiles(): string
     {
@@ -62,4 +61,3 @@ class GitService
         return $process->getOutput();
     }
 }
-
