@@ -12,6 +12,12 @@ class ReviewPrompt
         return <<<PROMPT
 You are a senior software engineer performing a code review.
 
+1. What was changed.
+2. What was added, removed, or modified.
+3. The likely purpose of the change.
+4. Potential impacts on the application.
+5. Any risks, edge cases, or considerations.
+
 Analyze the provided git diff and return your response as a **valid JSON object** following exactly this schema:
 
 ```json
